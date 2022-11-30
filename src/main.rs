@@ -11,7 +11,7 @@ mod ray;
 use crate::ray::Ray;
 
 mod hittable;
-use crate::hittable::{HittableList};
+use crate::hittable::HittableList;
 
 mod camera;
 use crate::camera::Camera;
@@ -23,6 +23,8 @@ use crate::material::MetalMaterial;
 use crate::material::DielectricMaterial;
 
 use rand::Rng;
+
+use rayon::prelude::*;
 
 fn random_world() -> HittableList {
     let mut world = HittableList::new();
@@ -78,8 +80,8 @@ fn main() {
 
     // Image
     const ASPECT_RATIO : f64 = 16.0 / 9.0;
-    const IMAGE_WIDTH : u64 = 100;
-    const IMAGE_HEIGHT : u64 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u64;
+    const IMAGE_WIDTH : u32 = 100;
+    const IMAGE_HEIGHT : u32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u32;
     const SAMPLES_PER_PIXEL : u64 = 16;
     const MAX_DEPTH : u64 = 5;
     
@@ -100,13 +102,9 @@ fn main() {
     );
 
     // Render
-    let mut image = Vec::<Color>::new();
-    image.resize((IMAGE_WIDTH * IMAGE_HEIGHT) as usize, Color::new(0.0, 0.0, 0.0));
-
-    for y in (0..IMAGE_HEIGHT).rev() {
-        eprintln!("\rScanlines remaining: {y}");
-        
-        for x in 0..IMAGE_WIDTH {
+    let instant = std::time::Instant::now();
+    let image = (0..IMAGE_HEIGHT).into_par_iter().rev().flat_map(|y|
+        (0..IMAGE_WIDTH).into_par_iter().flat_map(|x| {
             let mut pixel_color = Color::new(0.0, 0.0, 0.0);
 
             for _s in 0..SAMPLES_PER_PIXEL {
@@ -117,22 +115,20 @@ fn main() {
 
                 pixel_color = pixel_color + Ray::ray_color(&ray, &world, MAX_DEPTH);
             }
-            
-            image[(x + y * IMAGE_WIDTH) as usize] = pixel_color / SAMPLES_PER_PIXEL as f64;
-        }
-    }
 
-    
+            pixel_color = pixel_color / SAMPLES_PER_PIXEL as f64;
+
+            [pixel_color.r, pixel_color.g, pixel_color.b]
+        }).collect::<Vec<f64>>()
+    ).collect::<Vec<f64>>();
+
     println!("P3");
     println!("{IMAGE_WIDTH} {IMAGE_HEIGHT}");
     println!("255");
-    for y in (0..IMAGE_HEIGHT).rev() {
-        for x in 0..IMAGE_WIDTH {
-            let pixel_color = image[(x + y * IMAGE_WIDTH) as usize];
-            Color::write_color(std::io::stdout(), pixel_color, 2.0);
-        }
+    for color in image.chunks(3) {
+        Color::write_color(std::io::stdout(), Color::new(color[0], color[1], color[2]), 2.0);
     }
 
     eprintln!();
-    eprintln!("Done.");
+    eprintln!("Done. Took {} seconds.", instant.elapsed().as_secs_f64());
 }

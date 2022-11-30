@@ -39,7 +39,7 @@ impl Color {
         let ug: u64 = (255.0 * gamma_color.g) as u64;
         let ub: u64 = (255.0 * gamma_color.b) as u64;
 
-        writeln!(stream, "{} {} {}", ur, ug, ub);
+        let _ = writeln!(stream, "{} {} {}", ur, ug, ub);
     }
 
     pub fn lerp(t : f64, a : Color, b : Color) -> Color {

@@ -6,7 +6,7 @@ use crate::vec3::Vec3;
 use dyn_clone::DynClone;
 use rand::Rng;
 
-pub trait Material : DynClone {
+pub trait Material : DynClone + Sync {
     fn scatter(&self, ray : &Ray, hit : &HitRecord, attenuation: &mut Color, scattered: &mut Ray) -> bool;
 }
 
