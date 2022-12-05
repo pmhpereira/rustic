@@ -1,7 +1,7 @@
-use crate::material::{Material, LambertianMaterial};
-use crate::vec3::Vec3;
-use crate::ray::Ray;
 use crate::color::Color;
+use crate::material::{LambertianMaterial, Material};
+use crate::ray::Ray;
+use crate::vec3::Vec3;
 
 pub struct HitRecord {
     pub point: Vec3,
@@ -13,27 +13,28 @@ pub struct HitRecord {
 
 impl HitRecord {
     pub fn new() -> HitRecord {
-        HitRecord { point: Vec3::new(0.0, 0.0, 0.0),
+        HitRecord {
+            point: Vec3::new(0.0, 0.0, 0.0),
             normal: Vec3::new(0.0, 0.0, 0.0),
             t: f64::MAX,
             front_face: false,
-            material: Box::new(LambertianMaterial::new(Color::new(1.0, 1.0, 1.0)))
+            material: Box::new(LambertianMaterial::new(Color::new(1.0, 1.0, 1.0))),
         }
     }
 }
 
 pub trait Hittable: Sync {
-    fn hit(&self, ray: &Ray, t_min : f64, t_max : f64, hit: &mut HitRecord) -> bool;
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool;
 }
 
 pub struct HittableList {
-    objects: Vec<Box<dyn Hittable>>
+    objects: Vec<Box<dyn Hittable>>,
 }
 
 impl HittableList {
     pub fn new() -> HittableList {
         HittableList {
-            objects: Vec::new()
+            objects: Vec::new(),
         }
     }
 
@@ -43,7 +44,7 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit<'a>(&self, ray: &Ray, t_min : f64, t_max : f64, hit: &mut HitRecord) -> bool {
+    fn hit<'a>(&self, ray: &Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool {
         let mut hit_anything = false;
 
         let mut closest_so_far = t_max;

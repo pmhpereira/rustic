@@ -1,30 +1,34 @@
-use crate::vec3::Vec3;
-use crate::ray::Ray;
-use crate::hittable::Hittable;
 use crate::hittable::HitRecord;
+use crate::hittable::Hittable;
 use crate::material::Material;
+use crate::ray::Ray;
+use crate::vec3::Vec3;
 
 pub struct Sphere {
     center: Vec3,
     radius: f64,
-    material: Box<dyn Material>
+    material: Box<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f64, material : Box<dyn Material>) -> Sphere {
-        Sphere { center, radius, material }
+    pub fn new(center: Vec3, radius: f64, material: Box<dyn Material>) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, t_min : f64, t_max : f64, hit: &mut HitRecord) -> bool {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool {
         let oc = ray.origin - self.center;
 
         let a = ray.direction.length_squared();
         let half_b = Vec3::dot(oc, ray.direction);
-        let c = oc.length_squared() - self.radius*self.radius;
+        let c = oc.length_squared() - self.radius * self.radius;
 
-        let discriminant = half_b*half_b - a*c;
+        let discriminant = half_b * half_b - a * c;
 
         if discriminant < 0.0 {
             return false;
@@ -48,8 +52,7 @@ impl Hittable for Sphere {
         if Vec3::dot(ray.direction, hit.normal) > 0.0 {
             hit.normal = -hit.normal;
             hit.front_face = false;
-        }
-        else {
+        } else {
             hit.front_face = true;
         }
 
