@@ -1,7 +1,4 @@
-use std::{
-    io::Write,
-    ops::{Add, Div, Mul},
-};
+use std::ops::{Add, Div, Mul};
 
 use crate::vec3::Vec3;
 
@@ -33,16 +30,6 @@ impl Color {
         let b = rand::thread_rng().gen_range(min..max);
 
         Color { r, g, b }
-    }
-
-    pub fn write_color(mut stream: impl Write, color: Color, gamma: f64) {
-        let gamma_color = color.gamma(gamma);
-
-        let ur: u64 = (255.0 * gamma_color.r) as u64;
-        let ug: u64 = (255.0 * gamma_color.g) as u64;
-        let ub: u64 = (255.0 * gamma_color.b) as u64;
-
-        let _ = writeln!(stream, "{} {} {}", ur, ug, ub);
     }
 
     pub fn lerp(t: f64, a: Color, b: Color) -> Color {

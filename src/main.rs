@@ -1,4 +1,5 @@
 mod color;
+
 use crate::color::Color;
 
 mod vec3;
@@ -25,6 +26,24 @@ use crate::material::MetalMaterial;
 use rand::Rng;
 
 use rayon::prelude::*;
+
+fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std::io::Result<()> {
+    let transformed_pixels: Vec<u8> = pixels
+        .into_iter()
+        .map(|pixel| (255.0 * pixel) as u8)
+        .collect();
+
+    image::save_buffer(
+        file_path,
+        &transformed_pixels,
+        width,
+        height,
+        image::ColorType::Rgb8,
+    )
+    .unwrap();
+
+    Ok(())
+}
 
 fn random_world() -> HittableList {
     let mut world = HittableList::new();
@@ -102,6 +121,7 @@ fn main() {
     const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u32;
     const SAMPLES_PER_PIXEL: u64 = 16;
     const MAX_DEPTH: u64 = 5;
+    const GAMMA: f64 = 2.0;
 
     // Camera
     let look_from = Vec3::new(13.0, 2.0, 3.0);
@@ -142,6 +162,7 @@ fn main() {
                     }
 
                     pixel_color = pixel_color / SAMPLES_PER_PIXEL as f64;
+                    pixel_color = pixel_color.gamma(GAMMA);
 
                     [pixel_color.r, pixel_color.g, pixel_color.b]
                 })
@@ -149,16 +170,7 @@ fn main() {
         })
         .collect::<Vec<f64>>();
 
-    println!("P3");
-    println!("{IMAGE_WIDTH} {IMAGE_HEIGHT}");
-    println!("255");
-    for color in image.chunks(3) {
-        Color::write_color(
-            std::io::stdout(),
-            Color::new(color[0], color[1], color[2]),
-            2.0,
-        );
-    }
+    let _ = save_image("render.png", IMAGE_WIDTH, IMAGE_HEIGHT, image);
 
     eprintln!();
     eprintln!("Done. Took {} seconds.", instant.elapsed().as_secs_f64());
