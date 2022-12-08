@@ -1,9 +1,9 @@
-use crate::color::Color;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
-use crate::vec3::Vec3;
+use crate::vector3_traits::Helpers;
 
 use dyn_clone::DynClone;
+use nalgebra::Vector3;
 use rand::Rng;
 
 pub trait Material: DynClone + Sync {
@@ -11,18 +11,18 @@ pub trait Material: DynClone + Sync {
         &self,
         ray: &Ray,
         hit: &HitRecord,
-        attenuation: &mut Color,
+        attenuation: &mut Vector3<f64>,
         scattered: &mut Ray,
     ) -> bool;
 }
 
 #[derive(Clone)]
 pub struct LambertianMaterial {
-    albedo: Color,
+    albedo: Vector3<f64>,
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo: Color) -> LambertianMaterial {
+    pub fn new(albedo: Vector3<f64>) -> LambertianMaterial {
         LambertianMaterial { albedo: albedo }
     }
 }
@@ -32,10 +32,10 @@ impl Material for LambertianMaterial {
         &self,
         _ray: &Ray,
         hit: &HitRecord,
-        attenuation: &mut Color,
+        attenuation: &mut Vector3<f64>,
         scattered: &mut Ray,
     ) -> bool {
-        let scattered_direction = hit.normal + Vec3::random_in_unit_sphere().normalized();
+        let scattered_direction = hit.normal + Vector3::new_random_in_unit_sphere().normalize();
         *scattered = Ray::new(hit.point, scattered_direction);
         *attenuation = self.albedo;
 
@@ -45,12 +45,12 @@ impl Material for LambertianMaterial {
 
 #[derive(Clone)]
 pub struct MetalMaterial {
-    albedo: Color,
+    albedo: Vector3<f64>,
     fuzz: f64,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo: Color, fuzz: f64) -> MetalMaterial {
+    pub fn new(albedo: Vector3<f64>, fuzz: f64) -> MetalMaterial {
         MetalMaterial {
             albedo: albedo,
             fuzz: fuzz,
@@ -63,13 +63,13 @@ impl Material for MetalMaterial {
         &self,
         ray: &Ray,
         hit: &HitRecord,
-        attenuation: &mut Color,
+        attenuation: &mut Vector3<f64>,
         scattered: &mut Ray,
     ) -> bool {
-        let reflected_direction = Vec3::reflect(ray.direction.normalized(), hit.normal);
+        let reflected_direction = Vector3::reflection(ray.direction.normalize(), hit.normal);
         *scattered = Ray::new(
             hit.point,
-            reflected_direction + self.fuzz * Vec3::random_in_unit_sphere(),
+            reflected_direction + self.fuzz * Vector3::new_random_in_unit_sphere(),
         );
         *attenuation = self.albedo;
 
@@ -100,10 +100,10 @@ impl Material for DielectricMaterial {
         &self,
         ray: &Ray,
         hit: &HitRecord,
-        attenuation: &mut Color,
+        attenuation: &mut Vector3<f64>,
         scattered: &mut Ray,
     ) -> bool {
-        *attenuation = Color::new(1.0, 1.0, 1.0);
+        *attenuation = Vector3::new(1.0, 1.0, 1.0);
 
         let refraction_ratio = if hit.front_face {
             1.0 / self.ir
@@ -111,21 +111,21 @@ impl Material for DielectricMaterial {
             self.ir
         };
 
-        let direction_normalized = ray.direction.normalized();
+        let direction_normalized = ray.direction.normalize();
 
-        let cos_theta = f64::min(Vec3::dot(-direction_normalized, hit.normal), 1.0);
+        let cos_theta = f64::min(Vector3::dot(&-direction_normalized, &hit.normal), 1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract: bool = refraction_ratio * sin_theta > 1.0;
 
-        let direction: Vec3;
+        let direction: Vector3<f64>;
         if cannot_refract == true
             || DielectricMaterial::reflectance(cos_theta, refraction_ratio)
                 > rand::thread_rng().gen()
         {
-            direction = Vec3::reflect(direction_normalized, hit.normal);
+            direction = Vector3::reflection(direction_normalized, hit.normal);
         } else {
-            direction = Vec3::refract(direction_normalized, hit.normal, refraction_ratio);
+            direction = Vector3::refraction(direction_normalized, hit.normal, refraction_ratio);
         }
 
         *scattered = Ray::new(hit.point, direction);

@@ -1,46 +1,50 @@
-use crate::color::Color;
 use crate::hittable::{HitRecord, Hittable};
-use crate::vec3::Vec3;
+
+use nalgebra::Vector3;
 
 #[derive(Copy, Clone)]
 pub struct Ray {
-    pub origin: Vec3,
-    pub direction: Vec3,
+    pub origin: Vector3<f64>,
+    pub direction: Vector3<f64>,
 }
 
 impl Ray {
-    pub fn new(origin: Vec3, direction: Vec3) -> Ray {
+    pub fn new(origin: Vector3<f64>, direction: Vector3<f64>) -> Ray {
         Ray { origin, direction }
     }
 
-    pub fn at(self, t: f64) -> Vec3 {
+    pub fn at(self, t: f64) -> Vector3<f64> {
         self.origin + t * self.direction
     }
 
-    pub fn ray_color(ray: &Ray, world: &impl Hittable, depth: u64) -> Color {
+    pub fn ray_color(ray: &Ray, world: &impl Hittable, depth: u64) -> Vector3<f64> {
         let mut hit = HitRecord::new();
 
         if depth == 0 {
-            return Color::new(0.0, 0.0, 0.0);
+            return Vector3::zeros();
         }
 
         if world.hit(ray, 0.0001, f64::MAX, &mut hit) == true {
-            let mut scattered = Ray::new(Vec3::ZERO, Vec3::ZERO);
-            let mut attenuation = Color::new(0.0, 0.0, 0.0);
+            let mut scattered = Ray::new(Vector3::zeros(), Vector3::zeros());
+            let mut attenuation = Vector3::zeros();
 
             if hit
                 .material
                 .as_ref()
                 .scatter(&ray, &hit, &mut attenuation, &mut scattered)
             {
-                return attenuation * Self::ray_color(&scattered, world, depth - 1);
+                return attenuation.component_mul(&Self::ray_color(&scattered, world, depth - 1));
             }
 
-            return Color::new(0.0, 0.0, 0.0);
+            return Vector3::zeros();
         }
 
-        let unit_direction = ray.direction.normalized();
+        let unit_direction = ray.direction.normalize();
         let t = 0.5 * (unit_direction.y + 1.0);
-        Color::lerp(t, Color::new(1.0, 1.0, 1.0), Color::new(0.5, 0.7, 1.0))
+        Vector3::lerp(
+            &Vector3::new(1.0, 1.0, 1.0),
+            &Vector3::new(0.5, 0.7, 1.0),
+            t,
+        )
     }
 }

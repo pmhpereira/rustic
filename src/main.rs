@@ -1,10 +1,3 @@
-mod color;
-
-use crate::color::Color;
-
-mod vec3;
-use crate::vec3::Vec3;
-
 mod sphere;
 use crate::sphere::Sphere;
 
@@ -18,13 +11,14 @@ mod camera;
 use crate::camera::Camera;
 
 mod material;
-use crate::material::DielectricMaterial;
-use crate::material::LambertianMaterial;
-use crate::material::Material;
-use crate::material::MetalMaterial;
+use crate::material::{DielectricMaterial, LambertianMaterial, Material, MetalMaterial};
 
+mod vector3_traits;
+use crate::vector3_traits::Helpers;
+
+
+use nalgebra::Vector3;
 use rand::Rng;
-
 use rayon::prelude::*;
 
 fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std::io::Result<()> {
@@ -48,33 +42,33 @@ fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std
 fn random_world() -> HittableList {
     let mut world = HittableList::new();
 
-    let material_ground = Box::new(LambertianMaterial::new(Color::new(0.5, 0.5, 0.5)));
+    let material_ground = Box::new(LambertianMaterial::new(Vector3::new(0.5, 0.5, 0.5)));
     world.add(Box::new(Sphere::new(
-        Vec3::new(0.0, -1000.0, -1.0),
+        Vector3::new(0.0, -1000.0, -1.0),
         1000.0,
         material_ground,
     )));
 
     for x in -11..11 {
         for y in -11..11 {
-            let center = Vec3::new(
+            let center = Vector3::new(
                 x as f64 + 0.9 * rand::thread_rng().gen::<f64>(),
                 0.2,
                 y as f64 + 0.9 * rand::thread_rng().gen::<f64>(),
             );
 
-            if (center - Vec3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+            if (center - Vector3::new(4.0, 0.2, 0.0)).magnitude() > 0.9 {
                 let material_random_value: f64 = rand::thread_rng().gen();
 
                 let material_sphere: Box<dyn Material>;
 
                 if material_random_value < 0.8 {
                     // diffuse
-                    let albedo = Color::random() * Color::random();
+                    let albedo = Vector3::new_random().component_mul(&Vector3::new_random());
                     material_sphere = Box::new(LambertianMaterial::new(albedo));
                 } else if material_random_value < 0.95 {
                     // metal
-                    let albedo = Color::random_range(0.5, 1.0);
+                    let albedo = Vector3::new_random_in_range(0.5, 1.0);
                     let fuzz = rand::thread_rng().gen_range(0.0..0.5);
                     material_sphere = Box::new(MetalMaterial::new(albedo, fuzz));
                 } else {
@@ -87,23 +81,23 @@ fn random_world() -> HittableList {
         }
     }
 
-    let material_left = Box::new(LambertianMaterial::new(Color::new(0.4, 0.2, 0.1)));
+    let material_left = Box::new(LambertianMaterial::new(Vector3::new(0.4, 0.2, 0.1)));
     world.add(Box::new(Sphere::new(
-        Vec3::new(-4.0, 1.0, 0.0),
+        Vector3::new(-4.0, 1.0, 0.0),
         1.0,
         material_left,
     )));
 
     let material_center = Box::new(DielectricMaterial::new(1.5));
     world.add(Box::new(Sphere::new(
-        Vec3::new(0.0, 1.0, 0.0),
+        Vector3::new(0.0, 1.0, 0.0),
         1.0,
         material_center,
     )));
 
-    let material_right = Box::new(MetalMaterial::new(Color::new(0.7, 0.6, 0.5), 0.0));
+    let material_right = Box::new(MetalMaterial::new(Vector3::new(0.7, 0.6, 0.5), 0.0));
     world.add(Box::new(Sphere::new(
-        Vec3::new(4.0, 1.0, 0.0),
+        Vector3::new(4.0, 1.0, 0.0),
         1.0,
         material_right,
     )));
@@ -124,9 +118,9 @@ fn main() {
     const GAMMA: f64 = 2.0;
 
     // Camera
-    let look_from = Vec3::new(13.0, 2.0, 3.0);
-    let look_at = Vec3::new(0.0, 0.0, 0.0);
-    let v_up = Vec3::new(0.0, 1.0, 0.0);
+    let look_from = Vector3::new(13.0, 2.0, 3.0);
+    let look_at = Vector3::new(0.0, 0.0, 0.0);
+    let v_up = Vector3::new(0.0, 1.0, 0.0);
     let focus_distance = 10.0;
 
     let camera = Camera::new(
@@ -148,7 +142,7 @@ fn main() {
             (0..IMAGE_WIDTH)
                 .into_par_iter()
                 .flat_map(|x| {
-                    let mut pixel_color = Color::new(0.0, 0.0, 0.0);
+                    let mut pixel_color = Vector3::zeros();
 
                     for _s in 0..SAMPLES_PER_PIXEL {
                         let u =
@@ -164,7 +158,7 @@ fn main() {
                     pixel_color = pixel_color / SAMPLES_PER_PIXEL as f64;
                     pixel_color = pixel_color.gamma(GAMMA);
 
-                    [pixel_color.r, pixel_color.g, pixel_color.b]
+                    [pixel_color.x, pixel_color.y, pixel_color.z]
                 })
                 .collect::<Vec<f64>>()
         })

@@ -1,11 +1,11 @@
-use crate::color::Color;
 use crate::material::{LambertianMaterial, Material};
 use crate::ray::Ray;
-use crate::vec3::Vec3;
+
+use nalgebra::Vector3;
 
 pub struct HitRecord {
-    pub point: Vec3,
-    pub normal: Vec3,
+    pub point: Vector3<f64>,
+    pub normal: Vector3<f64>,
     pub t: f64,
     pub front_face: bool,
     pub material: Box<dyn Material>,
@@ -14,11 +14,11 @@ pub struct HitRecord {
 impl HitRecord {
     pub fn new() -> HitRecord {
         HitRecord {
-            point: Vec3::new(0.0, 0.0, 0.0),
-            normal: Vec3::new(0.0, 0.0, 0.0),
+            point: Vector3::zeros(),
+            normal: Vector3::zeros(),
             t: f64::MAX,
             front_face: false,
-            material: Box::new(LambertianMaterial::new(Color::new(1.0, 1.0, 1.0))),
+            material: Box::new(LambertianMaterial::new(Vector3::new(1.0, 1.0, 1.0))),
         }
     }
 }
