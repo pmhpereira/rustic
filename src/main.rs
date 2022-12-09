@@ -5,7 +5,7 @@ mod ray;
 use crate::ray::Ray;
 
 mod hittable;
-use crate::hittable::HittableList;
+use crate::hittable::{Hittable, HittableList};
 
 mod camera;
 use crate::camera::Camera;
@@ -16,10 +16,16 @@ use crate::material::{DielectricMaterial, LambertianMaterial, Material, MetalMat
 mod vector3_traits;
 use crate::vector3_traits::Helpers;
 
+mod aabb;
+
+mod bvh;
+use bvh::BVH;
 
 use nalgebra::Vector3;
 use rand::Rng;
 use rayon::prelude::*;
+
+use std::sync::Arc;
 
 fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std::io::Result<()> {
     let transformed_pixels: Vec<u8> = pixels
@@ -39,11 +45,11 @@ fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std
     Ok(())
 }
 
-fn random_world() -> HittableList {
+fn random_world() -> impl Hittable {
     let mut world = HittableList::new();
 
     let material_ground = Box::new(LambertianMaterial::new(Vector3::new(0.5, 0.5, 0.5)));
-    world.add(Box::new(Sphere::new(
+    world.add(Arc::new(Sphere::new(
         Vector3::new(0.0, -1000.0, -1.0),
         1000.0,
         material_ground,
@@ -51,9 +57,11 @@ fn random_world() -> HittableList {
 
     for x in -11..11 {
         for y in -11..11 {
+            let radius = 0.2;
+
             let center = Vector3::new(
                 x as f64 + 0.9 * rand::thread_rng().gen::<f64>(),
-                0.2,
+                radius,
                 y as f64 + 0.9 * rand::thread_rng().gen::<f64>(),
             );
 
@@ -76,33 +84,33 @@ fn random_world() -> HittableList {
                     material_sphere = Box::new(DielectricMaterial::new(1.5));
                 }
 
-                world.add(Box::new(Sphere::new(center, 0.2, material_sphere)));
+                world.add(Arc::new(Sphere::new(center, radius, material_sphere)));
             }
         }
     }
 
     let material_left = Box::new(LambertianMaterial::new(Vector3::new(0.4, 0.2, 0.1)));
-    world.add(Box::new(Sphere::new(
+    world.add(Arc::new(Sphere::new(
         Vector3::new(-4.0, 1.0, 0.0),
         1.0,
         material_left,
     )));
 
     let material_center = Box::new(DielectricMaterial::new(1.5));
-    world.add(Box::new(Sphere::new(
+    world.add(Arc::new(Sphere::new(
         Vector3::new(0.0, 1.0, 0.0),
         1.0,
         material_center,
     )));
 
     let material_right = Box::new(MetalMaterial::new(Vector3::new(0.7, 0.6, 0.5), 0.0));
-    world.add(Box::new(Sphere::new(
+    world.add(Arc::new(Sphere::new(
         Vector3::new(4.0, 1.0, 0.0),
         1.0,
         material_right,
     )));
 
-    world
+    BVH::new(&mut world.objects, (0.0, 1.0))
 }
 
 fn main() {
@@ -111,7 +119,7 @@ fn main() {
 
     // Image
     const ASPECT_RATIO: f64 = 16.0 / 9.0;
-    const IMAGE_WIDTH: u32 = 100;
+    const IMAGE_WIDTH: u32 = 600;
     const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u32;
     const SAMPLES_PER_PIXEL: u64 = 16;
     const MAX_DEPTH: u64 = 5;

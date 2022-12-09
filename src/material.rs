@@ -6,7 +6,7 @@ use dyn_clone::DynClone;
 use nalgebra::Vector3;
 use rand::Rng;
 
-pub trait Material: DynClone + Sync {
+pub trait Material: DynClone + Sync + Send {
     fn scatter(
         &self,
         ray: &Ray,

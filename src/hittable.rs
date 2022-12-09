@@ -1,5 +1,8 @@
+use crate::aabb::AABB;
 use crate::material::{LambertianMaterial, Material};
 use crate::ray::Ray;
+
+use std::sync::Arc;
 
 use nalgebra::Vector3;
 
@@ -23,12 +26,15 @@ impl HitRecord {
     }
 }
 
-pub trait Hittable: Sync {
+pub trait Hittable: Sync + Send {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool;
+    fn bounding_box(&self, _t0: f64, _t1: f64, _output_box: &mut AABB) -> bool {
+        true
+    }
 }
 
 pub struct HittableList {
-    objects: Vec<Box<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable>>,
 }
 
 impl HittableList {
@@ -38,7 +44,7 @@ impl HittableList {
         }
     }
 
-    pub fn add(&mut self, boxed_object: Box<dyn Hittable>) {
+    pub fn add(&mut self, boxed_object: Arc<dyn Hittable>) {
         self.objects.push(boxed_object);
     }
 }
@@ -59,5 +65,30 @@ impl Hittable for HittableList {
         }
 
         return hit_anything;
+    }
+
+    fn bounding_box(&self, t0: f64, t1: f64, output_box: &mut AABB) -> bool {
+        if self.objects.is_empty() {
+            return false;
+        }
+
+        let mut temp_box = AABB::zeros();
+        let mut first_box = true;
+
+        for object in &self.objects {
+            if false == object.bounding_box(t0, t1, &mut temp_box) {
+                return false;
+            }
+
+            if true == first_box {
+                *output_box = temp_box;
+            } else {
+                *output_box = AABB::surrounding_box(output_box, &temp_box);
+            }
+
+            first_box = false;
+        }
+
+        true
     }
 }
