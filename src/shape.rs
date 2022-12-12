@@ -9,3 +9,6 @@ pub use rectangle_xz::RectangleXZ;
 
 mod rectangle_yz;
 pub use rectangle_yz::RectangleYZ;
+
+mod cube;
+pub use cube::Cube;
