@@ -23,7 +23,7 @@ impl Ray {
 
     pub fn ray_color(
         ray: &Ray,
-        world: &impl Hittable,
+        world: &Box<dyn Hittable>,
         background_color: &Vector3<f64>,
         depth: u64,
     ) -> Vector3<f64> {
