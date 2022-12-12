@@ -7,14 +7,14 @@ use std::sync::Arc;
 use nalgebra::Vector3;
 
 #[derive(Clone)]
-pub struct DiffuseLight {
+pub struct EmissiveMaterial {
     emission: Arc<dyn Texture>,
     scale: f64,
 }
 
-impl DiffuseLight {
-    pub fn new(emission: Arc<dyn Texture>) -> DiffuseLight {
-        DiffuseLight {
+impl EmissiveMaterial {
+    pub fn new(emission: Arc<dyn Texture>) -> EmissiveMaterial {
+        EmissiveMaterial {
             emission: emission,
             scale: 1.0,
         }
@@ -25,7 +25,7 @@ impl DiffuseLight {
     }
 }
 
-impl Material for DiffuseLight {
+impl Material for EmissiveMaterial {
     fn emitted(&self, uv: (f64, f64), point: &Vector3<f64>) -> Vector3<f64> {
         self.emission.get_color(uv, point) * self.scale
     }

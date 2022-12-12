@@ -1,13 +1,12 @@
 mod dielectric;
+mod emissive;
 mod lambert;
 mod metal;
 
 pub use dielectric::DielectricMaterial;
+pub use emissive::EmissiveMaterial;
 pub use lambert::LambertianMaterial;
 pub use metal::MetalMaterial;
-
-mod diffuse_light;
-pub use diffuse_light::DiffuseLight;
 
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
