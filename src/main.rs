@@ -1,5 +1,5 @@
-mod sphere;
-use crate::sphere::Sphere;
+mod shape;
+use crate::shape::*;
 
 mod ray;
 use crate::ray::Ray;
@@ -137,21 +137,88 @@ fn random_world() -> impl Hittable {
     BVH::new(&mut world.objects, (0.0, 1.0))
 }
 
+fn cornell_box() -> impl Hittable {
+    let mut world = HittableList::new();
+
+    let red_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(0.65, 0.05, 0.05),
+    ))));
+    let white_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(0.73, 0.73, 0.73),
+    ))));
+    let white_material2 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(0.73, 0.73, 0.73),
+    ))));
+    let white_material3 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(0.73, 0.73, 0.73),
+    ))));
+    let green_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(0.12, 0.45, 0.15),
+    ))));
+    let light_material = Box::new(DiffuseLight::new(Arc::new(SolidColorTexture::new(
+        Vector3::new(15.0, 15.0, 15.0),
+    ))));
+
+    world.add(Arc::new(RectangleYZ::new(
+        (0.0, 555.0),
+        (0.0, 555.0),
+        555.0,
+        green_material,
+    )));
+
+    world.add(Arc::new(RectangleYZ::new(
+        (0.0, 555.0),
+        (0.0, 555.0),
+        0.0,
+        red_material,
+    )));
+
+    world.add(Arc::new(RectangleXZ::new(
+        (213.0, 343.0),
+        (227.0, 332.0),
+        554.0,
+        light_material,
+    )));
+
+    world.add(Arc::new(RectangleXZ::new(
+        (0.0, 555.0),
+        (0.0, 555.0),
+        0.0,
+        white_material,
+    )));
+
+    world.add(Arc::new(RectangleXZ::new(
+        (0.0, 555.0),
+        (0.0, 555.0),
+        555.0,
+        white_material2,
+    )));
+
+    world.add(Arc::new(RectangleXY::new(
+        (0.0, 555.0),
+        (0.0, 555.0),
+        555.0,
+        white_material3,
+    )));
+
+    BVH::new(&mut world.objects, (0.0, 1.0))
+}
+
 fn main() {
     // World
-    let world = random_world();
+    let world = cornell_box();
 
     // Image
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
+    const ASPECT_RATIO: f64 = 1.0;
     const IMAGE_WIDTH: u32 = 600;
     const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u32;
-    const SAMPLES_PER_PIXEL: u64 = 16;
-    const MAX_DEPTH: u64 = 5;
+    const SAMPLES_PER_PIXEL: u64 = 128;
+    const MAX_DEPTH: u64 = 50;
     const GAMMA: f64 = 2.0;
 
     // Camera
-    let look_from = Vector3::new(13.0, 2.0, 3.0);
-    let look_at = Vector3::new(0.0, 0.0, 0.0);
+    let look_from = Vector3::new(278.0, 278.0, -800.0);
+    let look_at = Vector3::new(278.0, 278.0, 0.0);
     let v_up = Vector3::new(0.0, 1.0, 0.0);
     let focus_distance = 10.0;
 
@@ -159,14 +226,14 @@ fn main() {
         look_from,
         look_at,
         v_up,
-        30.0,
+        40.0,
         ASPECT_RATIO,
         0.1,
         focus_distance,
     );
 
     // Render
-    let background_color = Vector3::new(0.2, 0.2, 0.2);
+    let background_color = Vector3::new(0.0, 0.0, 0.0);
     let instant = std::time::Instant::now();
     let image = (0..IMAGE_HEIGHT)
         .into_par_iter()
