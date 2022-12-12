@@ -11,6 +11,7 @@ mod camera;
 use crate::camera::Camera;
 
 mod material;
+use crate::material::DiffuseLight;
 use crate::material::{DielectricMaterial, LambertianMaterial, Material, MetalMaterial};
 
 mod vector3_traits;
@@ -123,6 +124,16 @@ fn random_world() -> impl Hittable {
         material_right,
     )));
 
+    let mut diffuse_light = Box::new(DiffuseLight::new(Arc::new(ImageTexture::new(
+        "resources/earth.jpg".to_string(),
+    ))));
+    diffuse_light.set_scale(3.0);
+    world.add(Arc::new(Sphere::new(
+        Vector3::new(8.0, 1.0, 0.0),
+        1.0,
+        diffuse_light,
+    )));
+
     BVH::new(&mut world.objects, (0.0, 1.0))
 }
 
@@ -148,7 +159,7 @@ fn main() {
         look_from,
         look_at,
         v_up,
-        20.0,
+        30.0,
         ASPECT_RATIO,
         0.1,
         focus_distance,

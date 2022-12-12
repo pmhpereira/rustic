@@ -6,6 +6,9 @@ pub use dielectric::DielectricMaterial;
 pub use lambert::LambertianMaterial;
 pub use metal::MetalMaterial;
 
+mod diffuse_light;
+pub use diffuse_light::DiffuseLight;
+
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 
@@ -24,5 +27,7 @@ pub trait Material: DynClone + Sync + Send {
         false
     }
 
+    fn emitted(&self, _uv: (f64, f64), _point: &Vector3<f64>) -> Vector3<f64> {
+        Vector3::zeros()
     }
 }
