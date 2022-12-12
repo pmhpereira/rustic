@@ -21,6 +21,8 @@ mod texture;
 mod scene;
 use crate::scene::Scene;
 
+mod transform;
+
 use nalgebra::Vector3;
 use rand::Rng;
 use rayon::prelude::*;

@@ -2,6 +2,8 @@ use nalgebra::Vector3;
 use rand::Rng;
 
 pub trait Helpers {
+    fn infinity() -> Vector3<f64>;
+
     fn gamma(self, gamma: f64) -> Vector3<f64>;
     fn reflection(v: Vector3<f64>, n: Vector3<f64>) -> Vector3<f64>;
     fn refraction(uv: Vector3<f64>, n: Vector3<f64>, etai_over_etat: f64) -> Vector3<f64>;
@@ -12,6 +14,10 @@ pub trait Helpers {
 }
 
 impl Helpers for Vector3<f64> {
+    fn infinity() -> Vector3<f64> {
+        Vector3::new(f64::INFINITY, f64::INFINITY, f64::INFINITY)
+    }
+
     fn gamma(self, gamma: f64) -> Self {
         let gamma_r = self.x.powf(1.0 / gamma);
         let gamma_g = self.y.powf(1.0 / gamma);
