@@ -56,7 +56,9 @@ impl BVH {
         a.bounding_box(0.0, 0.0, &mut box_a);
         b.bounding_box(0.0, 0.0, &mut box_b);
 
-        box_a.minimum[axis].partial_cmp(&box_b.minimum[axis]).unwrap()
+        box_a.minimum[axis]
+            .partial_cmp(&box_b.minimum[axis])
+            .unwrap()
     }
 }
 

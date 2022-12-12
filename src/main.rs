@@ -21,6 +21,9 @@ mod aabb;
 mod bvh;
 use bvh::BVH;
 
+mod texture;
+use texture::{CheckerTexture, ImageTexture, SolidColorTexture};
+
 use nalgebra::Vector3;
 use rand::Rng;
 use rayon::prelude::*;
@@ -48,7 +51,13 @@ fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std
 fn random_world() -> impl Hittable {
     let mut world = HittableList::new();
 
-    let material_ground = Box::new(LambertianMaterial::new(Vector3::new(0.5, 0.5, 0.5)));
+    let checker_texture = CheckerTexture::new(
+        Box::new(SolidColorTexture::new(Vector3::new(0.2, 0.3, 0.1))),
+        Box::new(SolidColorTexture::new(Vector3::new(0.9, 0.9, 0.9))),
+    );
+
+    let material_ground = Box::new(LambertianMaterial::new(Arc::new(checker_texture)));
+
     world.add(Arc::new(Sphere::new(
         Vector3::new(0.0, -1000.0, -1.0),
         1000.0,
@@ -73,7 +82,9 @@ fn random_world() -> impl Hittable {
                 if material_random_value < 0.8 {
                     // diffuse
                     let albedo = Vector3::new_random().component_mul(&Vector3::new_random());
-                    material_sphere = Box::new(LambertianMaterial::new(albedo));
+                    material_sphere = Box::new(LambertianMaterial::new(Arc::new(
+                        SolidColorTexture::new(albedo),
+                    )));
                 } else if material_random_value < 0.95 {
                     // metal
                     let albedo = Vector3::new_random_in_range(0.5, 1.0);
@@ -89,14 +100,16 @@ fn random_world() -> impl Hittable {
         }
     }
 
-    let material_left = Box::new(LambertianMaterial::new(Vector3::new(0.4, 0.2, 0.1)));
+    let material_left = Box::new(DielectricMaterial::new(1.5));
     world.add(Arc::new(Sphere::new(
         Vector3::new(-4.0, 1.0, 0.0),
         1.0,
         material_left,
     )));
 
-    let material_center = Box::new(DielectricMaterial::new(1.5));
+    let material_center = Box::new(LambertianMaterial::new(Arc::new(ImageTexture::new(
+        "resources/earth.jpg".to_string(),
+    ))));
     world.add(Arc::new(Sphere::new(
         Vector3::new(0.0, 1.0, 0.0),
         1.0,

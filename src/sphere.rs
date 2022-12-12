@@ -4,6 +4,8 @@ use crate::hittable::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
 
+use std::f64::consts::PI;
+
 use nalgebra::Vector3;
 
 pub struct Sphere {
@@ -19,6 +21,16 @@ impl Sphere {
             radius,
             material,
         }
+    }
+
+    fn get_uv(&self, point: Vector3<f64>) -> (f64, f64) {
+        let theta = f64::acos(-point.y);
+        let phi = f64::atan2(-point.z, point.x) + PI;
+
+        let u = phi / (2.0 * PI);
+        let v = theta / PI;
+
+        (u, v)
     }
 }
 
@@ -50,6 +62,7 @@ impl Hittable for Sphere {
         hit.point = ray.at(root);
         hit.normal = (hit.point - self.center) / self.radius;
         hit.material = dyn_clone::clone_box(&*self.material);
+        hit.uv = self.get_uv(hit.normal);
 
         if Vector3::dot(&ray.direction, &hit.normal) > 0.0 {
             hit.normal = -hit.normal;

@@ -1,6 +1,7 @@
 use crate::aabb::AABB;
-use crate::material::{LambertianMaterial, Material};
+use crate::material::*;
 use crate::ray::Ray;
+use crate::texture::SolidColorTexture;
 
 use std::sync::Arc;
 
@@ -12,6 +13,7 @@ pub struct HitRecord {
     pub t: f64,
     pub front_face: bool,
     pub material: Box<dyn Material>,
+    pub uv: (f64, f64),
 }
 
 impl HitRecord {
@@ -21,7 +23,10 @@ impl HitRecord {
             normal: Vector3::zeros(),
             t: f64::MAX,
             front_face: false,
-            material: Box::new(LambertianMaterial::new(Vector3::new(1.0, 1.0, 1.0))),
+            material: Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+                Vector3::new(1.0, 1.0, 1.0),
+            )))),
+            uv: (0.0, 0.0),
         }
     }
 }
