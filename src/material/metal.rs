@@ -2,18 +2,21 @@ use super::Material;
 
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
+use crate::texture::Texture;
 use crate::vector3_traits::Helpers;
+
+use std::sync::Arc;
 
 use nalgebra::Vector3;
 
 #[derive(Clone)]
 pub struct MetalMaterial {
-    albedo: Vector3<f64>,
+    albedo: Arc<dyn Texture>,
     fuzz: f64,
 }
 
 impl MetalMaterial {
-    pub fn new(albedo: Vector3<f64>, fuzz: f64) -> MetalMaterial {
+    pub fn new(albedo: Arc<dyn Texture>, fuzz: f64) -> MetalMaterial {
         MetalMaterial {
             albedo: albedo,
             fuzz: fuzz,
@@ -34,7 +37,7 @@ impl Material for MetalMaterial {
             hit.point,
             reflected_direction + self.fuzz * Vector3::new_random_in_unit_sphere(),
         );
-        *attenuation = self.albedo;
+        *attenuation = self.albedo.get_color(hit.uv, &hit.point);
 
         return true;
     }

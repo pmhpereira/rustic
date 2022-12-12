@@ -90,7 +90,10 @@ fn random_world() -> impl Hittable {
                     // metal
                     let albedo = Vector3::new_random_in_range(0.5, 1.0);
                     let fuzz = rand::thread_rng().gen_range(0.0..0.5);
-                    material_sphere = Box::new(MetalMaterial::new(albedo, fuzz));
+                    material_sphere = Box::new(MetalMaterial::new(
+                        Arc::new(SolidColorTexture::new(albedo)),
+                        fuzz,
+                    ));
                 } else {
                     // glass
                     material_sphere = Box::new(DielectricMaterial::new(1.5));
@@ -117,7 +120,10 @@ fn random_world() -> impl Hittable {
         material_center,
     )));
 
-    let material_right = Box::new(MetalMaterial::new(Vector3::new(0.7, 0.6, 0.5), 0.0));
+    let material_right = Box::new(MetalMaterial::new(
+        Arc::new(SolidColorTexture::new(Vector3::new(0.7, 0.6, 0.5))),
+        0.0,
+    ));
     world.add(Arc::new(Sphere::new(
         Vector3::new(4.0, 1.0, 0.0),
         1.0,
