@@ -30,14 +30,14 @@ use rayon::prelude::*;
 pub const ASPECT_RATIO: f64 = 2.0;
 pub const IMAGE_WIDTH: u32 = 400;
 pub const IMAGE_HEIGHT: u32 = (IMAGE_WIDTH as f64 / ASPECT_RATIO) as u32;
-pub const SAMPLES_PER_PIXEL: u64 = 50;
+pub const SAMPLES_PER_PIXEL: u64 = 64;
 pub const MAX_DEPTH: u64 = 50;
 pub const GAMMA: f64 = 2.0;
 pub const BACKGROUND_COLOR: Vector3<f64> = Vector3::new(0.9, 0.9, 0.9);
 
 fn main() {
     // World
-    let scene = Scene::random();
+    let scene = Scene::cornell_box();
 
     // Render
     let instant = std::time::Instant::now();

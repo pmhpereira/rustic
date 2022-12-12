@@ -1,10 +1,12 @@
 use crate::bvh::BVH;
 use crate::camera::Camera;
 use crate::hittable::{Hittable, HittableList};
-use crate::{material::*, ASPECT_RATIO};
 use crate::shape::*;
 use crate::texture::*;
+use crate::transform::*;
 use crate::vector3_traits::Helpers;
+use crate::material::*;
+use crate::ASPECT_RATIO;
 
 use std::sync::Arc;
 
@@ -23,7 +25,15 @@ impl Scene {
         let v_up = Vector3::new(0.0, 1.0, 0.0);
         let focus_distance = 10.0;
 
-        let camera = Camera::new(look_from, look_at, v_up, 40.0, ASPECT_RATIO, 0.1, focus_distance);
+        let camera = Camera::new(
+            look_from,
+            look_at,
+            v_up,
+            40.0,
+            ASPECT_RATIO,
+            0.1,
+            focus_distance,
+        );
 
         let mut world = HittableList::new();
 
@@ -128,7 +138,15 @@ impl Scene {
         let v_up = Vector3::new(0.0, 1.0, 0.0);
         let focus_distance = 10.0;
 
-        let camera = Camera::new(look_from, look_at, v_up, 40.0, ASPECT_RATIO, 0.1, focus_distance);
+        let camera = Camera::new(
+            look_from,
+            look_at,
+            v_up,
+            40.0,
+            ASPECT_RATIO,
+            0.1,
+            focus_distance,
+        );
 
         let mut world = HittableList::new();
 
@@ -142,6 +160,12 @@ impl Scene {
             Vector3::new(0.73, 0.73, 0.73),
         ))));
         let white_material3 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+            Vector3::new(0.73, 0.73, 0.73),
+        ))));
+        let white_material4 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+            Vector3::new(0.73, 0.73, 0.73),
+        ))));
+        let white_material5 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.73, 0.73, 0.73),
         ))));
         let green_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
@@ -192,6 +216,18 @@ impl Scene {
             555.0,
             white_material3,
         )));
+
+        world.add(Arc::new(Translate::new(Vector3::new(265.0, 0.0, 295.0), Box::new(RotateY::new(15.0, Box::new(Cube::new(
+            Vector3::new(0.0, 0.0, 0.0),
+            Vector3::new(165.0, 330.0, 165.0),
+            white_material4,
+        )))))));
+        
+        world.add(Arc::new(Translate::new(Vector3::new(130.0, 0.0, 65.0), Box::new(RotateY::new(-18.0, Box::new(Cube::new(
+            Vector3::new(0.0, 0.0, 0.0),
+            Vector3::new(165.0, 165.0, 165.0),
+            white_material5,
+        )))))));
 
         Scene {
             camera: camera,
