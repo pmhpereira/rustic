@@ -64,12 +64,7 @@ impl Hittable for Sphere {
         hit.material = dyn_clone::clone_box(&*self.material);
         hit.uv = self.get_uv(hit.normal);
 
-        if Vector3::dot(&ray.direction, &hit.normal) > 0.0 {
-            hit.normal = -hit.normal;
-            hit.front_face = false;
-        } else {
-            hit.front_face = true;
-        }
+        hit.set_face_normal(ray.direction, hit.normal);
 
         return true;
     }

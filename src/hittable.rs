@@ -29,6 +29,15 @@ impl HitRecord {
             uv: (0.0, 0.0),
         }
     }
+
+    pub fn set_face_normal(&mut self, direction: Vector3<f64>, normal: Vector3<f64>) {
+        if Vector3::dot(&direction, &normal) > 0.0 {
+            self.normal = -normal;
+            self.front_face = false;
+        } else {
+            self.front_face = true;
+        }
+    }
 }
 
 pub trait Hittable: Sync + Send {

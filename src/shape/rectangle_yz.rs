@@ -37,13 +37,8 @@ impl Hittable for RectangleYZ {
         hit.material = dyn_clone::clone_box(&*self.material);
         hit.uv.0 = (point.y - self.y.0) / (self.y.1 - self.y.0);
         hit.uv.1 = (point.z - self.z.0) / (self.z.1 - self.z.0);
-
-        if Vector3::dot(&ray.direction, &hit.normal) > 0.0 {
-            hit.normal = -hit.normal;
-            hit.front_face = false;
-        } else {
-            hit.front_face = true;
-        }
+        
+        hit.set_face_normal(ray.direction, hit.normal);
 
         return true;
     }

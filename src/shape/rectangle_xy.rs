@@ -38,12 +38,7 @@ impl Hittable for RectangleXY {
         hit.uv.0 = (point.x - self.x.0) / (self.x.1 - self.x.0);
         hit.uv.1 = (point.y - self.y.0) / (self.y.1 - self.y.0);
 
-        if Vector3::dot(&ray.direction, &hit.normal) > 0.0 {
-            hit.normal = -hit.normal;
-            hit.front_face = false;
-        } else {
-            hit.front_face = true;
-        }
+        hit.set_face_normal(ray.direction, hit.normal);
 
         return true;
     }
