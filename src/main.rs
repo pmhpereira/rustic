@@ -155,6 +155,7 @@ fn main() {
     );
 
     // Render
+    let background_color = Vector3::new(0.2, 0.2, 0.2);
     let instant = std::time::Instant::now();
     let image = (0..IMAGE_HEIGHT)
         .into_par_iter()
@@ -173,7 +174,8 @@ fn main() {
 
                         let ray = camera.get_ray(u, v);
 
-                        pixel_color = pixel_color + Ray::ray_color(&ray, &world, MAX_DEPTH);
+                        pixel_color = pixel_color
+                            + Ray::ray_color(&ray, &world, &background_color, MAX_DEPTH);
                     }
 
                     pixel_color = pixel_color / SAMPLES_PER_PIXEL as f64;

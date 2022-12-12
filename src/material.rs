@@ -16,11 +16,13 @@ pub use rand::Rng;
 pub trait Material: DynClone + Sync + Send {
     fn scatter(
         &self,
-        ray: &Ray,
-        hit: &HitRecord,
-        attenuation: &mut Vector3<f64>,
-        scattered: &mut Ray,
-    ) -> bool;
+        _ray: &Ray,
+        _hit: &HitRecord,
+        _attenuation: &mut Vector3<f64>,
+        _scattered: &mut Ray,
+    ) -> bool {
+        false
+    }
 
     }
 }

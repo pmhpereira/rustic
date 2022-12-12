@@ -68,8 +68,8 @@ impl Hittable for BVH {
             return false;
         }
 
-        let hit_left = self.left.as_ref().hit(ray, t_min, t_max, hit);
-        let hit_right = self.right.as_ref().hit(ray, t_min, hit.t, hit);
+        let hit_left = self.left.hit(ray, t_min, t_max, hit);
+        let hit_right = self.right.hit(ray, t_min, hit.t, hit);
 
         hit_left || hit_right
     }
