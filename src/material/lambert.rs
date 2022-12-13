@@ -15,8 +15,8 @@ pub struct LambertianMaterial {
 }
 
 impl LambertianMaterial {
-    pub fn new(albedo: Arc<dyn Texture>) -> LambertianMaterial {
-        LambertianMaterial { albedo: albedo }
+    pub fn arc(albedo: Arc<dyn Texture>) -> Arc<LambertianMaterial> {
+        Arc::new(LambertianMaterial { albedo: albedo })
     }
 }
 

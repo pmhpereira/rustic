@@ -23,9 +23,7 @@ impl HitRecord {
             normal: Vector3::zeros(),
             t: f64::MAX,
             front_face: false,
-            material: Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
-                Vector3::new(1.0, 1.0, 1.0),
-            )))),
+            material: LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(1.0, 1.0, 1.0))),
             uv: (0.0, 0.0),
         }
     }

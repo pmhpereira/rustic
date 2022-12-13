@@ -13,8 +13,8 @@ pub struct Translate {
 }
 
 impl Translate {
-    pub fn new(offset: Vector3<f64>, hittable: Arc<dyn Hittable>) -> Translate {
-        Translate { offset, hittable }
+    pub fn arc(offset: Vector3<f64>, hittable: Arc<dyn Hittable>) -> Arc<Translate> {
+        Arc::new(Translate { offset, hittable })
     }
 }
 impl Hittable for Translate {

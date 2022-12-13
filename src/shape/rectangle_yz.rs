@@ -16,8 +16,13 @@ pub struct RectangleYZ {
 }
 
 impl RectangleYZ {
-    pub fn new(y: (f64, f64), z: (f64, f64), k: f64, material: Arc<dyn Material>) -> RectangleYZ {
-        RectangleYZ { y, z, k, material }
+    pub fn arc(
+        y: (f64, f64),
+        z: (f64, f64),
+        k: f64,
+        material: Arc<dyn Material>,
+    ) -> Arc<RectangleYZ> {
+        Arc::new(RectangleYZ { y, z, k, material })
     }
 }
 

@@ -16,11 +16,11 @@ pub struct MetalMaterial {
 }
 
 impl MetalMaterial {
-    pub fn new(albedo: Arc<dyn Texture>, fuzz: f64) -> MetalMaterial {
-        MetalMaterial {
+    pub fn arc(albedo: Arc<dyn Texture>, fuzz: f64) -> Arc<MetalMaterial> {
+        Arc::new(MetalMaterial {
             albedo: albedo,
             fuzz: fuzz,
-        }
+        })
     }
 }
 

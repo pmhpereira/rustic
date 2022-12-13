@@ -21,54 +21,58 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(minimum: Vector3<f64>, maximum: Vector3<f64>, material: Arc<dyn Material>) -> Cube {
+    pub fn arc(
+        minimum: Vector3<f64>,
+        maximum: Vector3<f64>,
+        material: Arc<dyn Material>,
+    ) -> Arc<Cube> {
         let mut sides = HittableList::new();
 
-        sides.add(Arc::new(RectangleXY::new(
+        sides.add(RectangleXY::arc(
             (minimum.x, maximum.x),
             (minimum.y, maximum.y),
             maximum.z,
             Arc::clone(&material),
-        )));
-        sides.add(Arc::new(RectangleXY::new(
+        ));
+        sides.add(RectangleXY::arc(
             (minimum.x, maximum.x),
             (minimum.y, maximum.y),
             minimum.z,
             Arc::clone(&material),
-        )));
+        ));
 
-        sides.add(Arc::new(RectangleXZ::new(
+        sides.add(RectangleXZ::arc(
             (minimum.x, maximum.x),
             (minimum.z, maximum.z),
             maximum.y,
             Arc::clone(&material),
-        )));
-        sides.add(Arc::new(RectangleXZ::new(
+        ));
+        sides.add(RectangleXZ::arc(
             (minimum.x, maximum.x),
             (minimum.z, maximum.z),
             minimum.y,
             Arc::clone(&material),
-        )));
+        ));
 
-        sides.add(Arc::new(RectangleYZ::new(
+        sides.add(RectangleYZ::arc(
             (minimum.y, maximum.y),
             (minimum.z, maximum.z),
             maximum.x,
             Arc::clone(&material),
-        )));
-        sides.add(Arc::new(RectangleYZ::new(
+        ));
+        sides.add(RectangleYZ::arc(
             (minimum.y, maximum.y),
             (minimum.z, maximum.z),
             minimum.x,
             Arc::clone(&material),
-        )));
+        ));
 
-        Cube {
+        Arc::new(Cube {
             minimum,
             maximum,
             sides,
             material,
-        }
+        })
     }
 }
 

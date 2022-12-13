@@ -16,7 +16,7 @@ pub struct RotateY {
 }
 
 impl RotateY {
-    pub fn new(degrees: f64, hittable: Arc<dyn Hittable>) -> RotateY {
+    pub fn arc(degrees: f64, hittable: Arc<dyn Hittable>) -> Arc<RotateY> {
         let radians = degrees.to_radians();
 
         let mut bounding_box = AABB::zeros();
@@ -52,12 +52,12 @@ impl RotateY {
 
         let bounding_box = AABB::new(min, max);
 
-        RotateY {
+        Arc::new(RotateY {
             sin_theta,
             cos_theta,
             hittable,
             bounding_box,
-        }
+        })
     }
 }
 

@@ -10,8 +10,8 @@ pub struct CheckerTexture {
 }
 
 impl CheckerTexture {
-    pub fn new(even: Arc<dyn Texture>, odd: Arc<dyn Texture>) -> CheckerTexture {
-        CheckerTexture { even, odd }
+    pub fn arc(even: Arc<dyn Texture>, odd: Arc<dyn Texture>) -> Arc<CheckerTexture> {
+        Arc::new(CheckerTexture { even, odd })
     }
 }
 

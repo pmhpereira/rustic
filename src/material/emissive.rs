@@ -13,11 +13,11 @@ pub struct EmissiveMaterial {
 }
 
 impl EmissiveMaterial {
-    pub fn new(emission: Arc<dyn Texture>) -> EmissiveMaterial {
-        EmissiveMaterial {
+    pub fn arc(emission: Arc<dyn Texture>) -> Arc<EmissiveMaterial> {
+        Arc::new(EmissiveMaterial {
             emission: emission,
             scale: 1.0,
-        }
+        })
     }
 
     pub fn set_scale(&mut self, scale: f64) {

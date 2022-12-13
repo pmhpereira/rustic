@@ -4,6 +4,8 @@ use crate::hittable::HitRecord;
 use crate::ray::Ray;
 use crate::vector3_traits::Helpers;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 use rand::Rng;
 
@@ -13,8 +15,8 @@ pub struct DielectricMaterial {
 }
 
 impl DielectricMaterial {
-    pub fn new(ir: f64) -> DielectricMaterial {
-        DielectricMaterial { ir: ir }
+    pub fn arc(ir: f64) -> Arc<DielectricMaterial> {
+        Arc::new(DielectricMaterial { ir: ir })
     }
 
     fn reflectance(cosine: f64, ref_index: f64) -> f64 {

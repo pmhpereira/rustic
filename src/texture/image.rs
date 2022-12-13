@@ -1,8 +1,9 @@
 use super::Texture;
 
-use nalgebra::Vector3;
+use std::sync::Arc;
 
 use image::{io::Reader as ImageReader, ImageBuffer, Pixel, Rgb};
+use nalgebra::Vector3;
 
 pub struct ImageTexture {
     width: u32,
@@ -11,17 +12,17 @@ pub struct ImageTexture {
 }
 
 impl ImageTexture {
-    pub fn new(file_path: String) -> ImageTexture {
+    pub fn arc(file_path: String) -> Arc<ImageTexture> {
         let image = ImageReader::open(file_path).unwrap().decode().unwrap();
         let width = image.width();
         let height = image.height();
         let data = image.as_rgb8().unwrap();
 
-        ImageTexture {
+        Arc::new(ImageTexture {
             width,
             height,
             data: data.clone(),
-        }
+        })
     }
 }
 

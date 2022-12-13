@@ -1,5 +1,7 @@
 use super::Texture;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 pub struct SolidColorTexture {
@@ -7,8 +9,8 @@ pub struct SolidColorTexture {
 }
 
 impl SolidColorTexture {
-    pub fn new(color: Vector3<f64>) -> SolidColorTexture {
-        SolidColorTexture { color }
+    pub fn arc(color: Vector3<f64>) -> Arc<SolidColorTexture> {
+        Arc::new(SolidColorTexture { color })
     }
 }
 

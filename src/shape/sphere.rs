@@ -16,12 +16,12 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(center: Vector3<f64>, radius: f64, material: Arc<dyn Material>) -> Sphere {
-        Sphere {
+    pub fn arc(center: Vector3<f64>, radius: f64, material: Arc<dyn Material>) -> Arc<Sphere> {
+        Arc::new(Sphere {
             center,
             radius,
             material,
-        }
+        })
     }
 
     fn get_uv(&self, point: Vector3<f64>) -> (f64, f64) {

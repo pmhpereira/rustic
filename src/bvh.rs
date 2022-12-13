@@ -15,7 +15,7 @@ pub struct BVH {
 }
 
 impl BVH {
-    pub fn new(objects: &mut Vec<Arc<dyn Hittable>>, (t0, t1): (f64, f64)) -> BVH {
+    pub fn arc(objects: &mut Vec<Arc<dyn Hittable>>, (t0, t1): (f64, f64)) -> Arc<BVH> {
         let mut rng = rand::thread_rng();
         let axis = rng.gen_range(0..3);
 
@@ -31,8 +31,8 @@ impl BVH {
                 objects.sort_by(|a, b| Self::box_compare(a, b, axis));
 
                 let mid = objects.len() / 2;
-                left = Arc::new(BVH::new(&mut objects[..mid].to_vec(), (t0, t1)));
-                right = Arc::new(BVH::new(&mut objects[mid..].to_vec(), (t0, t1)));
+                left = BVH::arc(&mut objects[..mid].to_vec(), (t0, t1));
+                right = BVH::arc(&mut objects[mid..].to_vec(), (t0, t1));
             }
         }
 
@@ -42,11 +42,11 @@ impl BVH {
         left.bounding_box(t0, t1, &mut box_left);
         right.bounding_box(t0, t1, &mut box_right);
 
-        BVH {
+        Arc::new(BVH {
             left: left,
             right: right,
             aabb: AABB::surrounding_box(&box_left, &box_right),
-        }
+        })
     }
 
     fn box_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>, axis: usize) -> Ordering {
