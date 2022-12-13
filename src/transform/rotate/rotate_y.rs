@@ -29,12 +29,15 @@ impl RotateY {
         for i in 0..=1 {
             for j in 0..=1 {
                 for k in 0..=1 {
-                    let x = i as f64 * bounding_box.maximum.x + (1.0 - i as f64) * bounding_box.minimum.x;
-                    let y = j as f64 * bounding_box.maximum.y + (1.0 - j as f64) * bounding_box.minimum.y;
-                    let z = k as f64 * bounding_box.maximum.z + (1.0 - k as f64) * bounding_box.minimum.z;
+                    let x = i as f64 * bounding_box.maximum.x
+                        + (1.0 - i as f64) * bounding_box.minimum.x;
+                    let y = j as f64 * bounding_box.maximum.y
+                        + (1.0 - j as f64) * bounding_box.minimum.y;
+                    let z = k as f64 * bounding_box.maximum.z
+                        + (1.0 - k as f64) * bounding_box.minimum.z;
 
-                    let new_x = cos_theta*x + sin_theta*z;
-                    let new_z = -sin_theta*x + cos_theta*z;
+                    let new_x = cos_theta * x + sin_theta * z;
+                    let new_z = -sin_theta * x + cos_theta * z;
 
                     let tester = Vector3::new(new_x, y, new_z);
                     for c in 0..3 {
@@ -47,7 +50,12 @@ impl RotateY {
 
         let bounding_box = AABB::new(min, max);
 
-        RotateY { sin_theta, cos_theta, hittable, bounding_box }
+        RotateY {
+            sin_theta,
+            cos_theta,
+            hittable,
+            bounding_box,
+        }
     }
 }
 
@@ -70,7 +78,7 @@ impl Hittable for RotateY {
         let mut point = hit.point;
         point[0] = self.cos_theta * hit.point.x + self.sin_theta * hit.point.z;
         point[2] = -self.sin_theta * hit.point.x + self.cos_theta * hit.point.z;
-        
+
         let mut normal = hit.normal;
         normal[0] = self.cos_theta * hit.normal.x + self.sin_theta * hit.normal.z;
         normal[2] = -self.sin_theta * hit.normal.x + self.cos_theta * hit.normal.z;

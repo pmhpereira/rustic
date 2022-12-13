@@ -37,7 +37,7 @@ impl Hittable for RectangleYZ {
         hit.material = dyn_clone::clone_box(&*self.material);
         hit.uv.0 = (point.y - self.y.0) / (self.y.1 - self.y.0);
         hit.uv.1 = (point.z - self.z.0) / (self.z.1 - self.z.0);
-        
+
         hit.set_face_normal(ray.direction, hit.normal);
 
         return true;
