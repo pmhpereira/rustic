@@ -17,50 +17,50 @@ pub struct Cube {
     minimum: Vector3<f64>,
     maximum: Vector3<f64>,
     sides: HittableList,
-    material: Box<dyn Material>,
+    material: Arc<dyn Material>,
 }
 
 impl Cube {
-    pub fn new(minimum: Vector3<f64>, maximum: Vector3<f64>, material: Box<dyn Material>) -> Cube {
+    pub fn new(minimum: Vector3<f64>, maximum: Vector3<f64>, material: Arc<dyn Material>) -> Cube {
         let mut sides = HittableList::new();
 
         sides.add(Arc::new(RectangleXY::new(
             (minimum.x, maximum.x),
             (minimum.y, maximum.y),
             maximum.z,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
         sides.add(Arc::new(RectangleXY::new(
             (minimum.x, maximum.x),
             (minimum.y, maximum.y),
             minimum.z,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
 
         sides.add(Arc::new(RectangleXZ::new(
             (minimum.x, maximum.x),
             (minimum.z, maximum.z),
             maximum.y,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
         sides.add(Arc::new(RectangleXZ::new(
             (minimum.x, maximum.x),
             (minimum.z, maximum.z),
             minimum.y,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
 
         sides.add(Arc::new(RectangleYZ::new(
             (minimum.y, maximum.y),
             (minimum.z, maximum.z),
             maximum.x,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
         sides.add(Arc::new(RectangleYZ::new(
             (minimum.y, maximum.y),
             (minimum.z, maximum.z),
             minimum.x,
-            dyn_clone::clone_box(&*material),
+            Arc::clone(&material),
         )));
 
         Cube {

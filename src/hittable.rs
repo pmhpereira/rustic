@@ -12,7 +12,7 @@ pub struct HitRecord {
     pub normal: Vector3<f64>,
     pub t: f64,
     pub front_face: bool,
-    pub material: Box<dyn Material>,
+    pub material: Arc<dyn Material>,
     pub uv: (f64, f64),
 }
 
@@ -23,7 +23,7 @@ impl HitRecord {
             normal: Vector3::zeros(),
             t: f64::MAX,
             front_face: false,
-            material: Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+            material: Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
                 Vector3::new(1.0, 1.0, 1.0),
             )))),
             uv: (0.0, 0.0),

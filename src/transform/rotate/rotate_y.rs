@@ -4,17 +4,19 @@ use crate::hittable::Hittable;
 use crate::ray::Ray;
 use crate::vector3_traits::Helpers;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 pub struct RotateY {
     sin_theta: f64,
     cos_theta: f64,
     bounding_box: AABB,
-    hittable: Box<dyn Hittable>,
+    hittable: Arc<dyn Hittable>,
 }
 
 impl RotateY {
-    pub fn new(degrees: f64, hittable: Box<dyn Hittable>) -> RotateY {
+    pub fn new(degrees: f64, hittable: Arc<dyn Hittable>) -> RotateY {
         let radians = degrees.to_radians();
 
         let mut bounding_box = AABB::zeros();

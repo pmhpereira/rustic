@@ -15,7 +15,7 @@ use nalgebra::Vector3;
 pub struct Scene {
     pub camera: Camera,
     pub background_color: Vector3<f64>,
-    pub world: Box<dyn Hittable>,
+    pub world: Arc<dyn Hittable>,
 }
 
 impl Scene {
@@ -39,11 +39,11 @@ impl Scene {
         let mut world = HittableList::new();
 
         let checker_texture = CheckerTexture::new(
-            Box::new(SolidColorTexture::new(Vector3::new(0.2, 0.3, 0.1))),
-            Box::new(SolidColorTexture::new(Vector3::new(0.9, 0.9, 0.9))),
+            Arc::new(SolidColorTexture::new(Vector3::new(0.2, 0.3, 0.1))),
+            Arc::new(SolidColorTexture::new(Vector3::new(0.9, 0.9, 0.9))),
         );
 
-        let material_ground = Box::new(LambertianMaterial::new(Arc::new(checker_texture)));
+        let material_ground = Arc::new(LambertianMaterial::new(Arc::new(checker_texture)));
 
         world.add(Arc::new(Sphere::new(
             Vector3::new(0.0, -1000.0, -1.0),
@@ -64,25 +64,25 @@ impl Scene {
                 if (center - Vector3::new(4.0, 0.2, 0.0)).magnitude() > 0.9 {
                     let material_random_value: f64 = rand::thread_rng().gen();
 
-                    let material_sphere: Box<dyn Material>;
+                    let material_sphere: Arc<dyn Material>;
 
                     if material_random_value < 0.8 {
                         // diffuse
                         let albedo = Vector3::new_random().component_mul(&Vector3::new_random());
-                        material_sphere = Box::new(LambertianMaterial::new(Arc::new(
+                        material_sphere = Arc::new(LambertianMaterial::new(Arc::new(
                             SolidColorTexture::new(albedo),
                         )));
                     } else if material_random_value < 0.95 {
                         // metal
                         let albedo = Vector3::new_random_in_range(0.5, 1.0);
                         let fuzz = rand::thread_rng().gen_range(0.0..0.5);
-                        material_sphere = Box::new(MetalMaterial::new(
+                        material_sphere = Arc::new(MetalMaterial::new(
                             Arc::new(SolidColorTexture::new(albedo)),
                             fuzz,
                         ));
                     } else {
                         // glass
-                        material_sphere = Box::new(DielectricMaterial::new(1.5));
+                        material_sphere = Arc::new(DielectricMaterial::new(1.5));
                     }
 
                     world.add(Arc::new(Sphere::new(center, radius, material_sphere)));
@@ -90,14 +90,14 @@ impl Scene {
             }
         }
 
-        let material_left = Box::new(DielectricMaterial::new(1.5));
+        let material_left = Arc::new(DielectricMaterial::new(1.5));
         world.add(Arc::new(Sphere::new(
             Vector3::new(-4.0, 1.0, 0.0),
             1.0,
             material_left,
         )));
 
-        let material_center = Box::new(LambertianMaterial::new(Arc::new(ImageTexture::new(
+        let material_center = Arc::new(LambertianMaterial::new(Arc::new(ImageTexture::new(
             "resources/earth.jpg".to_string(),
         ))));
         world.add(Arc::new(Sphere::new(
@@ -106,7 +106,7 @@ impl Scene {
             material_center,
         )));
 
-        let material_right = Box::new(MetalMaterial::new(
+        let material_right = Arc::new(MetalMaterial::new(
             Arc::new(SolidColorTexture::new(Vector3::new(0.7, 0.6, 0.5))),
             0.0,
         ));
@@ -116,10 +116,9 @@ impl Scene {
             material_right,
         )));
 
-        let mut diffuse_light = Box::new(EmissiveMaterial::new(Arc::new(ImageTexture::new(
+        let diffuse_light = Arc::new(EmissiveMaterial::new(Arc::new(ImageTexture::new(
             "resources/earth.jpg".to_string(),
         ))));
-        diffuse_light.set_scale(3.0);
         world.add(Arc::new(Sphere::new(
             Vector3::new(8.0, 1.0, 0.0),
             1.0,
@@ -129,7 +128,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.9, 0.9, 0.9),
-            world: Box::new(BVH::new(&mut world.objects, (0.0, 1.0))),
+            world: Arc::new(BVH::new(&mut world.objects, (0.0, 1.0))),
         }
     }
 
@@ -152,28 +151,28 @@ impl Scene {
 
         let mut world = HittableList::new();
 
-        let red_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let red_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.65, 0.05, 0.05),
         ))));
-        let white_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let white_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let white_material2 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let white_material2 = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let white_material3 = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let white_material3 = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let left_object_material = Box::new(LambertianMaterial::new(Arc::new(
+        let left_object_material = Arc::new(LambertianMaterial::new(Arc::new(
             SolidColorTexture::new(Vector3::new(0.9, 0.9, 0.9)),
         )));
-        let right_object_material = Box::new(LambertianMaterial::new(Arc::new(
+        let right_object_material = Arc::new(LambertianMaterial::new(Arc::new(
             SolidColorTexture::new(Vector3::new(0.9, 0.9, 0.9)),
         )));
-        let green_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let green_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.12, 0.45, 0.15),
         ))));
-        let light_material = Box::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
+        let light_material = Arc::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(15.0, 15.0, 15.0),
         ))));
 
@@ -221,9 +220,9 @@ impl Scene {
 
         world.add(Arc::new(Translate::new(
             Vector3::new(265.0, 0.0, 295.0),
-            Box::new(RotateY::new(
+            Arc::new(RotateY::new(
                 15.0,
-                Box::new(Cube::new(
+                Arc::new(Cube::new(
                     Vector3::new(0.0, 0.0, 0.0),
                     Vector3::new(165.0, 330.0, 165.0),
                     left_object_material,
@@ -233,9 +232,9 @@ impl Scene {
 
         world.add(Arc::new(Translate::new(
             Vector3::new(130.0, 0.0, 65.0),
-            Box::new(RotateY::new(
+            Arc::new(RotateY::new(
                 -18.0,
-                Box::new(Cube::new(
+                Arc::new(Cube::new(
                     Vector3::new(0.0, 0.0, 0.0),
                     Vector3::new(165.0, 165.0, 165.0),
                     right_object_material,
@@ -246,7 +245,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.9, 0.9, 0.9),
-            world: Box::new(BVH::new(&mut world.objects, (0.0, 1.0))),
+            world: Arc::new(BVH::new(&mut world.objects, (0.0, 1.0))),
         }
     }
 
@@ -269,30 +268,30 @@ impl Scene {
 
         let mut world = HittableList::new();
 
-        let red_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let red_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.2, 0.1, 0.0),
         ))));
-        let back_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let back_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let front_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let front_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.0, 0.0, 0.0),
         ))));
-        let bottom_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let bottom_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let top_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let top_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let left_object_material = Box::new(MetalMaterial::new(
+        let left_object_material = Arc::new(MetalMaterial::new(
             Arc::new(SolidColorTexture::new(Vector3::new(1.0, 1.0, 1.0))),
             0.0,
         ));
-        let right_object_material = Box::new(DielectricMaterial::new(2.0));
-        let green_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let right_object_material = Arc::new(DielectricMaterial::new(2.0));
+        let green_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.1, 0.2, 0.0),
         ))));
-        let light_material = Box::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
+        let light_material = Arc::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(20.0, 20.0, 20.0),
         ))));
 
@@ -360,7 +359,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.0, 0.0, 0.0),
-            world: Box::new(BVH::new(&mut world.objects, (0.0, 1.0))),
+            world: Arc::new(BVH::new(&mut world.objects, (0.0, 1.0))),
         }
     }
 
@@ -383,30 +382,30 @@ impl Scene {
 
         let mut world = HittableList::new();
 
-        let right_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let right_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(1.0, 0.18, 0.62),
         ))));
-        let back_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let back_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let front_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let front_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.0, 0.0, 0.0),
         ))));
-        let bottom_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let bottom_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let top_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let top_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.9, 0.9, 0.9),
         ))));
-        let left_object_material = Box::new(MetalMaterial::new(
+        let left_object_material = Arc::new(MetalMaterial::new(
             Arc::new(SolidColorTexture::new(Vector3::new(1.0, 1.0, 1.0))),
             0.0,
         ));
-        let right_object_material = Box::new(DielectricMaterial::new(2.0));
-        let left_material = Box::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
+        let right_object_material = Arc::new(DielectricMaterial::new(2.0));
+        let left_material = Arc::new(LambertianMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(0.18, 0.62, 1.0),
         ))));
-        let light_material = Box::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
+        let light_material = Arc::new(EmissiveMaterial::new(Arc::new(SolidColorTexture::new(
             Vector3::new(10.0, 10.0, 10.0),
         ))));
 
@@ -474,7 +473,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.0, 0.0, 0.0),
-            world: Box::new(BVH::new(&mut world.objects, (0.0, 1.0))),
+            world: Arc::new(BVH::new(&mut world.objects, (0.0, 1.0))),
         }
     }
 }

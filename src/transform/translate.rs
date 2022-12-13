@@ -3,15 +3,17 @@ use crate::hittable::HitRecord;
 use crate::hittable::Hittable;
 use crate::ray::Ray;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 pub struct Translate {
     offset: Vector3<f64>,
-    hittable: Box<dyn Hittable>,
+    hittable: Arc<dyn Hittable>,
 }
 
 impl Translate {
-    pub fn new(offset: Vector3<f64>, hittable: Box<dyn Hittable>) -> Translate {
+    pub fn new(offset: Vector3<f64>, hittable: Arc<dyn Hittable>) -> Translate {
         Translate { offset, hittable }
     }
 }

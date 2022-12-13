@@ -1,14 +1,16 @@
 use super::Texture;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 pub struct CheckerTexture {
-    even: Box<dyn Texture>,
-    odd: Box<dyn Texture>,
+    even: Arc<dyn Texture>,
+    odd: Arc<dyn Texture>,
 }
 
 impl CheckerTexture {
-    pub fn new(even: Box<dyn Texture>, odd: Box<dyn Texture>) -> CheckerTexture {
+    pub fn new(even: Arc<dyn Texture>, odd: Arc<dyn Texture>) -> CheckerTexture {
         CheckerTexture { even, odd }
     }
 }

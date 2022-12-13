@@ -4,17 +4,19 @@ use crate::hittable::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 pub struct RectangleXY {
     x: (f64, f64),
     y: (f64, f64),
     k: f64,
-    material: Box<dyn Material>,
+    material: Arc<dyn Material>,
 }
 
 impl RectangleXY {
-    pub fn new(x: (f64, f64), y: (f64, f64), k: f64, material: Box<dyn Material>) -> RectangleXY {
+    pub fn new(x: (f64, f64), y: (f64, f64), k: f64, material: Arc<dyn Material>) -> RectangleXY {
         RectangleXY { x, y, k, material }
     }
 }
@@ -34,7 +36,7 @@ impl Hittable for RectangleXY {
         hit.t = t;
         hit.point = point;
         hit.normal = Vector3::new(0.0, 0.0, 1.0);
-        hit.material = dyn_clone::clone_box(&*self.material);
+        hit.material = Arc::clone(&self.material);
         hit.uv.0 = (point.x - self.x.0) / (self.x.1 - self.x.0);
         hit.uv.1 = (point.y - self.y.0) / (self.y.1 - self.y.0);
 

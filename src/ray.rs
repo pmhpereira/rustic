@@ -1,5 +1,7 @@
 use crate::hittable::{HitRecord, Hittable};
 
+use std::sync::Arc;
+
 use nalgebra::Vector3;
 
 #[derive(Copy, Clone)]
@@ -23,7 +25,7 @@ impl Ray {
 
     pub fn ray_color(
         ray: &Ray,
-        world: &Box<dyn Hittable>,
+        world: &Arc<dyn Hittable>,
         background_color: &Vector3<f64>,
         depth: u64,
     ) -> Vector3<f64> {

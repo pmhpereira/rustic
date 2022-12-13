@@ -5,17 +5,18 @@ use crate::material::Material;
 use crate::ray::Ray;
 
 use std::f64::consts::PI;
+use std::sync::Arc;
 
 use nalgebra::Vector3;
 
 pub struct Sphere {
     center: Vector3<f64>,
     radius: f64,
-    material: Box<dyn Material>,
+    material: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vector3<f64>, radius: f64, material: Box<dyn Material>) -> Sphere {
+    pub fn new(center: Vector3<f64>, radius: f64, material: Arc<dyn Material>) -> Sphere {
         Sphere {
             center,
             radius,
@@ -61,7 +62,7 @@ impl Hittable for Sphere {
         hit.t = root;
         hit.point = ray.at(root);
         hit.normal = (hit.point - self.center) / self.radius;
-        hit.material = dyn_clone::clone_box(&*self.material);
+        hit.material = Arc::clone(&self.material);
         hit.uv = self.get_uv(hit.normal);
 
         hit.set_face_normal(ray.direction, hit.normal);
