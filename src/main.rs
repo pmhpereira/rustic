@@ -91,7 +91,7 @@ fn main() {
 
     eprintln!("100.0 %");
     eprintln!();
-    eprintln!("Done. Took {} seconds.", instant.elapsed().as_secs_f64());
+    eprintln!("Done. Took {:.2} seconds.", instant.elapsed().as_secs_f64());
 }
 
 fn save_image(file_path: &str, width: u32, height: u32, pixels: Vec<f64>) -> std::io::Result<()> {
