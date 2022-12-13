@@ -11,11 +11,10 @@ pub use metal::MetalMaterial;
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
 
-pub use dyn_clone::DynClone;
 pub use nalgebra::Vector3;
 pub use rand::Rng;
 
-pub trait Material: DynClone + Sync + Send {
+pub trait Material: Sync + Send {
     fn scatter(
         &self,
         _ray: &Ray,
