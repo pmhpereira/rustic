@@ -51,12 +51,8 @@ impl Ray {
             return emitted;
         }
 
-        return emitted
-            + attenuation.component_mul(&Self::ray_color(
-                &scattered,
-                world,
-                background_color,
-                depth - 1,
-            ));
+        let scatter = &Self::ray_color(&scattered, world, background_color, depth - 1);
+
+        return emitted + attenuation.component_mul(scatter);
     }
 }

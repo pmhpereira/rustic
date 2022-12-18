@@ -5,7 +5,6 @@ use crate::ray::Ray;
 use std::cmp::Ordering;
 use std::sync::Arc;
 
-use nalgebra::Vector3;
 use rand::Rng;
 
 pub struct BVH {
@@ -69,7 +68,10 @@ impl Hittable for BVH {
         }
 
         let hit_left = self.left.hit(ray, t_min, t_max, hit);
-        let hit_right = self.right.hit(ray, t_min, hit.t, hit);
+
+        let hit_right = self
+            .right
+            .hit(ray, t_min, if hit_left { hit.t } else { t_max }, hit);
 
         hit_left || hit_right
     }
