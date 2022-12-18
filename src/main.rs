@@ -26,6 +26,8 @@ use crate::scene::Scene;
 
 mod transform;
 
+mod obj_loader;
+
 use nalgebra::Vector3;
 use rand::Rng;
 use rayon::prelude::*;
@@ -39,7 +41,7 @@ pub const GAMMA: f64 = 1.0;
 
 fn main() {
     // World
-    let scene = Scene::tim_box();
+    let scene = Scene::monkey();
 
     let counter = Arc::new(AtomicI64::from(0));
 

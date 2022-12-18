@@ -12,3 +12,9 @@ pub use rectangle_yz::RectangleYZ;
 
 mod cube;
 pub use cube::Cube;
+
+mod triangle;
+pub use triangle::Triangle;
+
+mod mesh;
+pub use mesh::Mesh;

@@ -437,4 +437,99 @@ impl Scene {
             world: BVH::arc(&mut world.objects),
         }
     }
+
+    pub fn monkey() -> Scene {
+        // Camera
+        let look_from = Vector3::new(0.0, 0.0, 15.0);
+        let look_at = Vector3::new(0.0, 0.0, 0.0);
+        let v_up = Vector3::new(0.0, 1.0, 0.0);
+        let focus_distance = 400.0;
+
+        let camera = Camera::new(
+            look_from,
+            look_at,
+            v_up,
+            50.0,
+            ASPECT_RATIO,
+            0.01,
+            focus_distance,
+        );
+
+        let mut world = HittableList::new();
+
+        let right_material =
+            LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(1.0, 0.18, 0.62)));
+        let back_material =
+            LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(0.9, 0.9, 0.9)));
+        let bottom_material =
+            LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(0.9, 0.9, 0.9)));
+        let top_material =
+            LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(0.9, 0.9, 0.9)));
+        let left_material =
+            LambertianMaterial::arc(SolidColorTexture::arc(Vector3::new(0.18, 0.62, 1.0)));
+        let light_material =
+            EmissiveMaterial::arc(SolidColorTexture::arc(Vector3::new(10.0, 10.0, 10.0)));
+
+        world.add(RectangleYZ::arc(
+            (-5.0, 5.0),
+            (-5.0, 5.0),
+            -5.0,
+            left_material,
+        ));
+
+        world.add(RectangleYZ::arc(
+            (-5.0, 5.0),
+            (-5.0, 5.0),
+            5.0,
+            right_material,
+        ));
+
+        world.add(RectangleXZ::arc(
+            (-2.0, 2.0),
+            (-2.0, 2.0),
+            4.9,
+            light_material,
+        ));
+
+        world.add(RectangleXZ::arc(
+            (-5.0, 5.0),
+            (-5.0, 5.0),
+            -5.0,
+            bottom_material,
+        ));
+
+        world.add(RectangleXZ::arc(
+            (-5.0, 5.0),
+            (-5.0, 5.0),
+            5.0,
+            top_material,
+        ));
+
+        world.add(RectangleXY::arc(
+            (-5.0, 5.0),
+            (-5.0, 5.0),
+            -5.0,
+            back_material,
+        ));
+
+        let a_material: Arc<dyn Material> =
+            MetalMaterial::arc(SolidColorTexture::arc(Vector3::new(1.0, 0.85, 0.0)), 0.0);
+
+        world.add(Translate::arc(
+            Vector3::new(0.0, 0.0, 5.0),
+            RotateY::arc(
+                15.0,
+                Mesh::arc(
+                    String::from("resources/monkey.obj"),
+                    Arc::clone(&a_material),
+                ),
+            ),
+        ));
+
+        Scene {
+            camera: camera,
+            background_color: Vector3::new(1.0, 1.0, 1.0),
+            world: Arc::new(world),
+        }
+    }
 }
