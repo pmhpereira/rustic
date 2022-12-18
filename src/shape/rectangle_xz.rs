@@ -50,7 +50,7 @@ impl Hittable for RectangleXZ {
         return true;
     }
 
-    fn bounding_box(&self, _t0: f64, _t1: f64, output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
         *output_box = AABB::new(
             Vector3::new(self.x.0, self.k - 0.0001, self.z.0),
             Vector3::new(self.x.1, self.k + 0.0001, self.z.1),

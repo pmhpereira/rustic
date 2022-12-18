@@ -40,7 +40,7 @@ impl HitRecord {
 
 pub trait Hittable: Sync + Send {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, hit: &mut HitRecord) -> bool;
-    fn bounding_box(&self, _t0: f64, _t1: f64, _output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, _output_box: &mut AABB) -> bool {
         true
     }
 }
@@ -79,7 +79,7 @@ impl Hittable for HittableList {
         return hit_anything;
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64, output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
         if self.objects.is_empty() {
             return false;
         }
@@ -88,17 +88,16 @@ impl Hittable for HittableList {
         let mut first_box = true;
 
         for object in &self.objects {
-            if false == object.bounding_box(t0, t1, &mut temp_box) {
+            if false == object.bounding_box(&mut temp_box) {
                 return false;
             }
 
             if true == first_box {
                 *output_box = temp_box;
+                first_box = false;
             } else {
                 *output_box = AABB::surrounding_box(output_box, &temp_box);
             }
-
-            first_box = false;
         }
 
         true

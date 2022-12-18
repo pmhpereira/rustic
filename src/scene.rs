@@ -115,7 +115,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.9, 0.9, 0.9),
-            world: BVH::arc(&mut world.objects, (0.0, 1.0)),
+            world: BVH::arc(&mut world.objects),
         }
     }
 
@@ -224,7 +224,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.9, 0.9, 0.9),
-            world: BVH::arc(&mut world.objects, (0.0, 1.0)),
+            world: BVH::arc(&mut world.objects),
         }
     }
 
@@ -329,7 +329,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.0, 0.0, 0.0),
-            world: BVH::arc(&mut world.objects, (0.0, 1.0)),
+            world: BVH::arc(&mut world.objects),
         }
     }
 
@@ -434,7 +434,7 @@ impl Scene {
         Scene {
             camera: camera,
             background_color: Vector3::new(0.0, 0.0, 0.0),
-            world: BVH::arc(&mut world.objects, (0.0, 1.0)),
+            world: BVH::arc(&mut world.objects),
         }
     }
 }

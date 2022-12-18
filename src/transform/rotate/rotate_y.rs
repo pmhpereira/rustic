@@ -20,7 +20,7 @@ impl RotateY {
         let radians = degrees.to_radians();
 
         let mut bounding_box = AABB::zeros();
-        hittable.bounding_box(0.0, 1.0, &mut bounding_box);
+        hittable.bounding_box(&mut bounding_box);
 
         let mut min = Vector3::infinity();
         let mut max = -Vector3::infinity();
@@ -92,8 +92,8 @@ impl Hittable for RotateY {
         true
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64, output_box: &mut AABB) -> bool {
-        if self.hittable.bounding_box(t0, t1, output_box) {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
+        if self.hittable.bounding_box(output_box) {
             return false;
         }
 

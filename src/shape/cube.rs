@@ -81,7 +81,7 @@ impl Hittable for Cube {
         self.sides.hit(ray, t_min, t_max, hit)
     }
 
-    fn bounding_box(&self, _t0: f64, _t1: f64, output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
         *output_box = AABB::new(self.minimum, self.maximum);
         true
     }

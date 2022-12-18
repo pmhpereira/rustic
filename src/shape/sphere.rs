@@ -70,7 +70,7 @@ impl Hittable for Sphere {
         return true;
     }
 
-    fn bounding_box(&self, _t0: f64, _t1: f64, output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
         *output_box = AABB::new(
             self.center - Vector3::new(self.radius, self.radius, self.radius),
             self.center + Vector3::new(self.radius, self.radius, self.radius),

@@ -31,8 +31,8 @@ impl Hittable for Translate {
         true
     }
 
-    fn bounding_box(&self, t0: f64, t1: f64, output_box: &mut AABB) -> bool {
-        if self.hittable.bounding_box(t0, t1, output_box) {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
+        if self.hittable.bounding_box(output_box) {
             return false;
         }
 

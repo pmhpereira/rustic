@@ -15,7 +15,7 @@ pub struct BVH {
 }
 
 impl BVH {
-    pub fn arc(objects: &mut Vec<Arc<dyn Hittable>>, (t0, t1): (f64, f64)) -> Arc<BVH> {
+    pub fn arc(objects: &mut Vec<Arc<dyn Hittable>>) -> Arc<BVH> {
         let mut rng = rand::thread_rng();
         let axis = rng.gen_range(0..3);
 
@@ -31,16 +31,16 @@ impl BVH {
                 objects.sort_by(|a, b| Self::box_compare(a, b, axis));
 
                 let mid = objects.len() / 2;
-                left = BVH::arc(&mut objects[..mid].to_vec(), (t0, t1));
-                right = BVH::arc(&mut objects[mid..].to_vec(), (t0, t1));
+                left = BVH::arc(&mut objects[..mid].to_vec());
+                right = BVH::arc(&mut objects[mid..].to_vec());
             }
         }
 
         let mut box_left = AABB::zeros();
         let mut box_right = AABB::zeros();
 
-        left.bounding_box(t0, t1, &mut box_left);
-        right.bounding_box(t0, t1, &mut box_right);
+        left.bounding_box(&mut box_left);
+        right.bounding_box(&mut box_right);
 
         Arc::new(BVH {
             left: left,
@@ -50,11 +50,11 @@ impl BVH {
     }
 
     fn box_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>, axis: usize) -> Ordering {
-        let mut box_a = AABB::new(Vector3::zeros(), Vector3::zeros());
-        let mut box_b = AABB::new(Vector3::zeros(), Vector3::zeros());
+        let mut box_a = AABB::zeros();
+        let mut box_b = AABB::zeros();
 
-        a.bounding_box(0.0, 0.0, &mut box_a);
-        b.bounding_box(0.0, 0.0, &mut box_b);
+        a.bounding_box(&mut box_a);
+        b.bounding_box(&mut box_b);
 
         box_a.minimum[axis]
             .partial_cmp(&box_b.minimum[axis])
@@ -74,7 +74,7 @@ impl Hittable for BVH {
         hit_left || hit_right
     }
 
-    fn bounding_box(&self, _t0: f64, _t1: f64, output_box: &mut AABB) -> bool {
+    fn bounding_box(&self, output_box: &mut AABB) -> bool {
         *output_box = self.aabb;
         true
     }
